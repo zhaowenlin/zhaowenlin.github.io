@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>demo</title>
+</head>
+<body>
+	<script type="text/javascript">
+		function object(o) {
+		    function F() {}
+		    F.prototype = o;
+		    return new F();
+		}
+
+		function prototype(child, parent) {
+		    var prototype = object(parent.prototype);
+		    prototype.constructor = child;
+		    child.prototype = prototype;
+		}
+
+
+		//////////////////////
+		function Parent (name) {
+		    this.name = name;
+		    this.colors = ['red', 'blue', 'green'];
+		}
+
+		Parent.prototype.getName = function () {
+		    console.log(this.name)
+		}
+
+		function Child (name, age) {
+		    Parent.call(this, name);
+		    this.age = age;
+		}
+
+		Child.prototype = new Parent();
+
+		var child1 = new Child('张三', '18');
+
+		console.log(child1)
+
+//////////////////////////////////////
+// 单例模式（非闭包）
+
+		// 定义一个类
+function Singleton(name) {
+    this.name = name;
+    this.instance = null;
+}
+// 原型扩展类的一个方法getName()
+Singleton.prototype.getName = function() {
+    console.log(this.name)
+};
+// 获取类的实例
+Singleton.getInstance = function(name) {
+    if(!this.instance) {
+        this.instance = new Singleton(name);
+    }
+    return this.instance
+};
+
+// 获取对象1
+var a = Singleton.getInstance('a');
+// 获取对象2
+var b = Singleton.getInstance('b');
+// 进行比较
+console.log(a === b);
+
+/////////////////////////////////////////
+// 单例模式（闭包）
+
+function Singleton(name) {
+    this.name = name;
+}
+// 原型扩展类的一个方法getName()
+Singleton.prototype.getName = function() {
+    console.log(this.name)
+};
+// 获取类的实例
+Singleton.getInstance = (function() {
+    var instance = null;
+    return function(name) {
+        if(!this.instance) {
+            this.instance = new Singleton(name);
+        }
+        return this.instance
+    }        
+})();
+
+// 获取对象1
+var a = Singleton.getInstance('a');
+// 获取对象2
+var b = Singleton.getInstance('b');
+// 进行比较
+console.log(a === b);
+	</script>
+</body>
+</html>

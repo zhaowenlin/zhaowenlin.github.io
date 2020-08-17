@@ -1,0 +1,178 @@
+<!-- 
+请利用面向对象的思想实现一个通讯录功能：通讯录包含n个联系人，每一个联系人信息包含3个属性：姓名(name)、邮箱(email)、电话号码(number)，请结合以下给出的基本代码结构，完成联系人的录入、展现和删除功能。其中在录入时要求姓名不能为空，邮箱和电话号码不限，数据可以重复。
+备注：
+不能借助任何三方库，需使用原生代码实现
+录入时邮箱和电话号码2个字段内容需要有基本的格式校验
+必须使用面向对象的方式实现，否则不给分
+已知以下基本代码结构，请在答题框中编写完整的Script代码：
+-->
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>demo</title>
+  <style type="text/css">
+    * {
+  padding: 0;
+  margin: 0px;
+}
+.record p, .record-head p, ul li p {
+  display: inline-block;
+  margin-left: 10px;
+  width: 100px;
+  text-align: center;
+}
+ul {
+  list-style: none;
+}
+ul li{
+  list-style: none;
+}
+.user-delete {
+  cursor: pointer;
+}
+.error{
+  color: red;
+}
+  </style>
+</head>
+<body>
+  <!-- 按照以下基础结构完成题目 -->
+  <div id="J_container">
+  <div class="record-head"><p>姓名</p ><p>邮箱</p ><p>电话号码</p ><p>操作</p ></div>
+  <ul id="J_List">
+  </ul>
+  <form>
+    <div>
+      <input type="text" name="name" class="J_UserInput" placeholder="姓名" />
+    </div>
+    <div>
+      <input type="text" name="email" class="J_UserInput" placeholder="邮箱" />
+    </div>
+    <div>
+      <input type="text" name="number" class="J_UserInput" placeholder="电话号码" />
+    </div>
+    <button id="J_AddBtn">添加</button>
+    <div id="error" class="error"></div>
+  </form>
+  </div>
+  <script type="text/javascript">
+    // 请将script区域代码复制到答题框并完成相应的空缺代码逻辑
+
+  var JContainer = document.querySelector('#J_container');
+  var JList = JContainer.querySelector('#J_List');
+  var JAddBtn = JContainer.querySelector('#J_AddBtn');
+  var nameInput = JContainer.querySelector('[name="name"]');
+  var emailInput = JContainer.querySelector('[name="email"]');
+  var numberInput = JContainer.querySelector('[name="number"]');
+  var error = JContainer.querySelector('#error');
+
+  function Contact(){
+    // your code here
+    
+  }
+
+  Contact.prototype = {
+    // 添加
+    add: (name, email, number) => {
+
+      var liDomObj = document.createElement('li');
+      liDomObj.innerHTML = `<p>${name}</p>
+                            <p>${email}</p>
+                            <p>${number}</p>
+                            <p><button>删除</button></p>`;
+
+      JList.appendChild(liDomObj);
+    },
+
+    // 删除
+    del: (domObj) => {
+      domObj.remove();
+    },
+
+    // 格式验证
+    vali: (name, email, number) => {
+
+      var rt = {
+        isPassed: true,
+        msg: ''
+      };
+
+      // 格式验证，需要对name进行两边空格处理
+      name = name.replace(/^\s+(.*?)\s+$/,'$1');
+
+      if (name === '') {
+        // 验证姓名
+        rt.isPassed = false;
+        rt.msg = '姓名不能为空';
+
+      } else if (!(/^[\d\w]+\@(\w+\.)+\w+$/g).test(email) && email !== '') {
+        // 验证邮箱格式, 考虑多级域名
+        rt.isPassed = false;
+        rt.msg = '邮箱格式不正确';
+
+      } else if (!(/1[\d]{10}/).test(number) && number !== '') {
+        // 验证电话号码
+        // 只考虑国内手机号, 不做强制校验，主要考虑长度
+        rt.isPassed = false;
+        rt.msg = '手机号格式不正确';
+      }
+
+      return rt;
+    },
+
+    // 错误提示
+    showError: (msg) =>{
+      error.innerHTML = msg;
+    },
+
+    // 清空表单
+    clearInputs: function() {
+      nameInput.value = '';
+      emailInput.value = '';
+      numberInput.value = '';
+    }
+  }
+  Contact.prototype.constructor = Contact;
+
+  // 创建联系人实例
+  var contact = new Contact();
+
+  // 绑定点击事件
+  JAddBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+
+    // 获取表单数据
+    var name = nameInput.value;
+    var email = emailInput.value;
+    var number = numberInput.value;
+
+
+    // 校验成功做添加
+    var valiResult = contact.vali(name, email, number);
+    if (valiResult.isPassed) {
+        contact.add(name, email, number);
+        contact.clearInputs();
+    }
+    contact.showError(valiResult.msg);
+
+  });
+
+  // 代理绑定删除
+  JList.addEventListener('click', (e) => {
+    e.preventDefault();
+
+    // 删除做提示
+
+    if (e.target.tagName.toUpperCase() === 'BUTTON') {
+      contact.del(e.target.parentNode.parentNode);
+    }
+  });
+
+  // 需要考虑的如下：
+  // 1、可能需要考虑兼容性
+  // 2、可以考虑将添加的联系人存储到一个数组中管理
+
+  </script>
+</body>
+</html>

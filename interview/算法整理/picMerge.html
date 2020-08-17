@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>destructuringArray</title>
+</head>
+<body>
+
+    <!-- 第一张图片：<input type="file" name="file" id="change" >
+    第二张图片：<input type="file" name="file2" id="change2">
+    <canvas id="myCanvas1" width="400" height="260"></canvas>
+    <button id="btn">生成图片</button>
+    <a href="" id="download" download="测试图片.png">点我下载</a>
+    <script>
+      var canvas = document.getElementById('myCanvas1');
+      var context = canvas.getContext('2d');
+      var btn = document.getElementById('btn')
+      var change = document.getElementById('change')
+      var change2 = document.getElementById('change2')
+      var download = document.getElementById('download')
+      var img1 = new Image()
+      var img2 = new Image()
+      //处理跨域
+      img1.crossOrigin = 'anonymous'
+      img2.crossOrigin = 'anonymous'
+ 
+      change.onchange = function(event){
+        var file = event.target.files[0]
+        var url = window.URL.createObjectURL(file)
+        img1.src = url
+      }
+      change2.onchange = function(event){
+        var file = event.target.files[0]
+        var url = window.URL.createObjectURL(file)
+        img2.src = url
+      }
+      img1.onload = function(){
+        context.drawImage(img1,10,10,400,260)
+      }
+      img2.onload = function(){
+        context.drawImage(img2,20,20,50,50)
+        context.fillText("text.content111", 100, 110);
+      }
+      btn.onclick = function(){
+       var img =  convertCanvasToImage(canvas)
+       var arr = img.src.split(',')
+       var mime = arr[0].match(/:(.*?);/)[1]
+       var bstr =  atob(arr[1])
+       var n = bstr.length
+       var u8arr = new Uint8Array(n);
+       while (n--) {
+           u8arr[n] = bstr.charCodeAt(n);
+       }
+       var blob = new Blob([u8arr],{type:mime})
+       
+      }
+      //下载图片
+      download.onclick = function(blob){
+        var img =  convertCanvasToImage(canvas)
+        download.href = img.src
+      }
+      function convertCanvasToImage(canvas) {
+	      var image = new Image();
+	      image.src = canvas.toDataURL("image/png");
+	      return image;
+      }
+      
+    </script> -->
+
+	<div id="merge-pictur">
+		<canvas id="myCanvas" width="500" height="500" style="border:1px solid #d3d3d3;">
+			Your browser does not support the HTML5 canvas tag.
+		</canvas>
+		<a href="" id="download" download="mergePic.png">点我下载</a>
+	</div>
+	<script>
+		var bigPic = {
+			//url: "http://www.ehui.net/event/cmPoster/img/1.jpg"
+			url:"./image/big.png"
+		}
+
+		var smallPic = {
+			//url: "http://www.ehui.net/event/cmPoster/img/1_bg.png",
+			url: "./image/small.png",
+			left: 10,
+			top: 10,
+			width: 200,
+			height: 200,
+		}
+
+		var text = {
+			content: "<p>前端技术，无限可能</p>",
+			left: 400,
+			top: 400,
+		}
+
+
+		function convertCanvasToImage (canvas) {
+	      var image = new Image();
+	      image.src = canvas.toDataURL();
+	      return image;
+        }
+
+		function mergPic(bigPic, smallPic, text) {
+			var canvas = document.getElementById("myCanvas");
+		    var context = canvas.getContext("2d");
+		    var base64 = "";
+
+		   
+
+		    var bigPicImage = new Image()
+		    //bigPicImage.setAttribute("crossOrigin",'Anonymous')
+		    bigPicImage.src = bigPic.url;
+		    bigPicImage.onload = function(){
+		       context.drawImage(bigPicImage,
+		       	bigPic.left || 0,
+		       	bigPic.top || 0,
+		       	bigPic.width || 500,
+		       	bigPic.height || 500)
+		    }
+
+
+ 			var smallPicImage = new Image()
+ 			//smallPicImage.setAttribute("crossOrigin",'Anonymous')
+      		smallPicImage.src = smallPic.url;
+		    smallPicImage.onload = function(){
+		       context.drawImage(smallPicImage,
+		       	smallPic.left || 0,
+		       	smallPic.top || 0,
+		       	smallPic.width || 200,
+		       	smallPic.height || 200)
+		       // 这里绘制上去的文案为什么会被smallPicImage给遮住呢？
+		       context.fillText(text.content, text.left, text.top);
+		       // 这里想导出绘制完成的图片
+		      base64 = canvas.toDataURL("image/png");
+		      console.log(base64)
+		      
+
+	    	}
+
+      		 //下载图片
+		      download.onclick = function(){
+		        var url =  canvas.toDataURL("image/png");
+		        console.log(url)
+		      }
+
+		    
+
+
+
+
+		    //var bigImg = document.getElementById("bigPic");
+		    //console.log(bigImg)
+
+		    //ctx.drawImage(bigImg, 10, 10);
+		}
+
+		mergPic(bigPic, smallPic, text)
+
+	</script>
+
+</body>

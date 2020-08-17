@@ -1,0 +1,27 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>demo</title>
+</head>
+<body>
+  <script type="text/javascript">
+  var temp = [];
+    
+  function DFS(node) {
+  	if (typeof node === "object") {
+  		node.forEach(function(item,index) {
+	  		if (typeof item === "number") {
+	  			temp.push(item);
+	  		}
+	  		DFS(item);
+  		})
+  	}
+  	
+  }
+  DFS([1,2,[3,4],[5,6,[7,8]]])
+  console.log(temp)
+  </script>
+</body>
+</html>

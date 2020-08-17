@@ -1,0 +1,101 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>drag</title>
+</head>
+<body>
+<div id="container" style="border:1px solid red; position: absolute; width:100px; height: 100px"></div>
+<script>
+    function drag(elementId) {
+        var element = document.getElementById(elementId);
+        var position = {
+            offsetX: 0, //点击处偏移元素的X
+            offsetY: 0, //偏移Y值
+            state: 0 //是否正处于拖拽状态，1表示正在拖拽，0表示释放
+        };
+        //获得兼容的event对象
+        function getEvent(event) {
+            return event || window.event;
+        }
+        // 释放鼠标的状态
+        function release() {
+	        position.state = 0;
+    	}
+    	// 获取网页的宽度
+    	function getWindWidth() {
+    		return document.documentElement.clientWidth || document.body.clientWidth;
+            
+    	}
+    	// 获取网页的高度
+    	function getWindHeight() {
+    		return document.documentElement.clientHeight || document.body.clientHeight;
+    	}
+    	// 节流函数
+    	function throttle (fn,context,delay) {
+    		clearTimeout(fn.timeoutId);
+    		var args = arguments;
+            fn.timeoutId = setTimeout(function(){
+                fn.apply(context, args);
+            },delay);
+    	}
+    	// 事件兼容
+    	function on (type, selector, callback) {
+			if (selector.addEventListener) {
+				selector.addEventListener( type, callback, false );
+
+			} else if ( elem.attachEvent ) {
+				selector.attachEvent( "on" + type, callback );
+			}
+    	}
+    	// 鼠标移动时的处理逻辑
+    	function mouseMove (position, e) {
+    		if (position.state) {
+                position.endX = e.clientX;
+                position.endY = e.clientY;
+                // 如果是碰到document的body边缘则释放鼠标且元素贴边放置，需要重新拖拽；
+                if (element.offsetTop < 0 ) {
+                	element.style.top = 3 + 'px';
+                	release();
+                } else if (element.offsetLeft < 0) {
+					element.style.left = 3 + 'px';
+					release();
+                } else if (getWindWidth() < (element.offsetLeft + element.offsetWidth - 5)) {
+                	element.style.left = (getWindWidth() - element.offsetWidth)  + 'px';
+                	release();
+                } else if (getWindHeight() < (element.offsetTop + element.offsetHeight - 5)) {
+                	element.style.top = (getWindHeight() - element.offsetHeight) + 'px';
+                	release();
+                } else {
+	            	element.style.top = position.endY - position.offsetY + 'px';
+	            	element.style.left = position.endX - position.offsetX + 'px';
+	            }
+            }
+    	}
+
+        //元素被鼠标拖住
+        on('mousedown', element,function (event) {
+            //获得偏移的位置以及更改状态
+            var e = getEvent(event);
+            position.offsetX = e.offsetX;
+            position.offsetY = e.offsetY;
+            position.state = 1;
+        }, false);
+        //元素移动过程中
+        on('mousemove', document, function (event) {
+        	throttle(function(){
+                var e = getEvent(event);
+                mouseMove(position, e);
+            },null,50);
+            
+        }, false);
+        //释放拖拽状态
+        on('mouseup', element, function (event) {
+            release()
+        }, false);
+    }
+    drag('container');
+</script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>destructuringArray</title>
+</head>
+<body>
+<script>
+    var result = {} // 最后赋值结果;
+    var formaterMap = {} //用来记录formater转换为object;
+    var targetMap = {} // 用来记录target转换为object;
+    var targetIndexStack = [1] //用来记录target下标;
+    var indexStack = [] //用来记录formater下标
+    destructuringArray([1,[2,3,[6,77]],5,4], "[a,[b,e,[f]],c,d]")
+
+    function destructuringArray(target, formater) {
+        // 将数组和字符串转换为object，然后通过map映射下标找到相应的值
+       string2Object(formater,formaterMap);
+       array2Objct(target, targetMap)
+       console.log(targetMap);
+       console.log(formaterMap);
+        Object.keys(targetMap).forEach(function(item) {
+            var key = formaterMap[item]
+            if (key) {
+               result[key.key] = targetMap[item].key;
+            }
+        });
+        console.log('最后结果', result);
+    }
+
+    // 将字符串转化为map
+    function string2Object (formater, sourceArray) {
+        var key = '';
+       var index = 0;
+       var count = 0;
+       
+        for (var i = 0; i < formater.length; i ++) {
+             var a = false;
+             if (formater[i] === '[') {
+                count ++;
+                indexStack.push(index+1);
+                index = 0;
+             }
+             if (formater[i] === ']') {
+                count --;
+                indexStack.pop();
+                index = +indexStack.join('') + 1;
+             }
+            if (formater[i] !== ',' && formater[i] !== ']' && formater[i] !== '[') {
+                key += formater[i];
+                if (formater[i+1] !== ',' && formater[i+1] !== ']' && formater[i+1] !== '[') {
+                    a = false;
+                } else {
+                    a = true;
+                }
+                
+            }
+
+            if (a) {
+                index ++ 
+                sourceArray[indexStack.join('') + index] = {
+                    index: indexStack.join('') + index,
+                    key: key,
+                    count: count
+                }
+            }
+
+            if (formater[i + 1] == ',') {
+                key = "";
+            }
+        }
+    }
+
+    // 将数组转化为map
+    function array2Objct(target, targetMap) {
+        
+        if (target instanceof Array) {
+
+            target.forEach(function(item,index) {
+                
+                if (item instanceof Array) {
+                    targetIndexStack.push(index + 1);
+
+                    array2Objct(item, targetMap);
+                    targetIndexStack.pop()
+                } else {
+                    targetMap[targetIndexStack.join('') + (index + 1)] = {
+                        index: targetIndexStack.join('') + (index + 1),
+                        key: item
+                    }
+                }
+                //
+            })
+        }
+    }
+</script>
+</body>
+</html>
+
+
+

@@ -1,0 +1,71 @@
+<html>
+  <head></head>
+  <body>
+    <div>
+      <span><a href="">123</a>></span>
+      <span>
+      	<span>1</span>
+      	<span>2</span>
+      </span>
+      <span>
+      	<p>3</p>
+      	<p>4</p>
+      </span>
+      </div>
+    </div>
+  </body>
+  <script type="text/javascript">
+  	console.log(document.body);
+  	var totalElementsCount = 0; // 元素节点的总数
+	var maxDOMTreeDepth = 2; // 元素节点的最大嵌套深度: 初始值设为2是因为该值计算的最终值没有加上叶子节点和根节点的层级
+	var maxChildrenCount = 0; // 最大原子个数
+	var tag = 1;
+  	function nodes (node) {
+  		if (!node || (node.children && !node.children.length)) {
+  			return
+  		};
+  		var nodeList = [];
+  		var currentNode = null;
+  		var tag = 0;
+
+
+		nodeList = nodeList.concat(node);
+		while(nodeList.length > 0) {
+			currentNode = nodeList.pop();
+			currentNode.hasActive = true;
+			currentNode.tag = tag ++;
+
+			totalElementsCount ++;
+
+			
+
+			if (currentNode.children && currentNode.children.length > 0) {
+
+				var currentNodeLength = currentNode.children.length;
+				var ele=currentNode.parentNode;
+
+        		var elem_child = ele.children;
+				
+				var flag = true;
+				for (i = 0; i < elem_child.length; i++) {
+					if (elem_child[i].hasActive && currentNode.tag !== elem_child[i].tag && elem_child[i].nodeName !=="SCRIPT") {
+						flag = false;
+					}
+				}
+
+				flag && maxDOMTreeDepth++;
+
+
+				maxChildrenCount = currentNodeLength > maxChildrenCount ?  currentNodeLength : maxChildrenCount;
+
+				nodeList = nodeList.concat(Array.apply(null, currentNode.children)|| []);
+			}
+			
+		}
+
+  	}
+  	nodes(document.body)
+
+  	console.log("totalElementsCount:",totalElementsCount,"maxDOMTreeDepth:",(maxDOMTreeDepth),"maxChildrenCount:",maxChildrenCount)
+  </script>
+</html>
