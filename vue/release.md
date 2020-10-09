@@ -1,12 +1,9 @@
-<!--
- * @Descripttion: helloword
- * @Author: zhaowenlin
--->
-#初始化
+
+# 初始化
 引入vue.js的时候从入口文件开始执行，初始化一些全局属性和方法（directives,components等），原型上挂载$mount方法等操作，然后再我们new Vue({…})的时候会执行之前initMixin的时候对Vue的原型上挂载的_init函数Vue.prototype._init，此时才正式开始vue实例化，初始话的过程去initProp initMethods,initData等操作进行一系列依赖收集等
 
 
-#watcher
+# watcher
 每个组件会new一个wather实例,将vm._update(vm._render(), hydrating)也就是updateComponent作为expression
 
 init data的时候会给它下面的所有属性，observe一次，每个属性都会new Dep用来收集该属性的依赖，只要用到这个属性的表达式或者模板就会被添加依赖到deps数组，deps里面都是存的某个vm实例的watcher，在get函数里会使用到这个Dep实例；如果遇到对象就继续observe，遇到数组就特殊处理，对数组的原型(push pop 等函数)进行了重写，所以只有被重写的这些操作才会被监听到数据的变化；
@@ -31,7 +28,7 @@ watcher 属性也还会触发new Watcher() 区别于computed属性的wather有�
             if (childOb) {
                 childOb.dep.depend();
                 if (Array.isArray(value)) {
-                    dependArray(value);
+                  dependArray(value);
                 }
             }
         }
@@ -61,7 +58,7 @@ watcher 属性也还会触发new Watcher() 区别于computed属性的wather有�
 ```
 
 
-#update
+# update
 
 触发update的方式一般是click等UI交互方式，所以对浏览器对应的UI事件有一个监听事件，触发事件的时候会执行相应的回调函数，函数里如果对vm实例下面的observe属性进行了一系列操作的时候会触发之前初始化的defineProperty对属性get和set重写的函数执行，如果是读属性，且Dep.target为wather的时候会触发依赖收集，为啥需要这个Dep.target，其实它的值不是undefined就是wather，wather就是我们在初始化的时候对以上几种情况属性做的一个new watcher()操作，每个vue实例都有一个Watcher实例，这实例的有一个_wather和一个wathers，_watcher主要是为了更新vue实例，此watcher的expression属性就是vm._update(vm._render(), hydrating)；wathers就相当于一个watcherList,记录着当前vue实例的所有watcher（包括以上几种会被new watcher()的属性：watcher、data、computed、template等）
 
@@ -107,11 +104,11 @@ watcher 属性也还会触发new Watcher() 区别于computed属性的wather有�
   };
 ```
 
-#生成语法树（ast）
+# 生成语法树（ast）
 语法树的生成是通过获取根节点dom节点innerHtml的方式获取template字符串，然后while逐步解析字符串，通过对字符串的操作(substring截取，index移位)来生成语法树，该语法树会直接通过with(this){return _c('div',[_v(_s(modalTest + b))])}的方式将语法树整理后(根据节点类型来判断该用什么函数包裹起来)保存到render函数里，在render watcher执行的时候会执行该render函数
 
 
-#组件update
+# 组件update
 当我们修改属性的时候会触发defineProperty里属性的setter函数的dep.notify()
 notify也就是将该属性收集的watcher push到一个queue队列里，在第一次push的时候就通过nextTick开启一个微任务，我的上一篇文章讲了nextTick的原理，这里就不多讲了，也就是该watcher队列会在下一个微任务执行的时候被flush
 ```javascript
